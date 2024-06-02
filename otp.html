@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {box-sizing: border-box; font-size: 20px;}
+        ul, li {text-decoration: none; text-decoration-line: none;}
+        input {    border-collapse: collapse;
+            border-spacing: 0;
+            box-sizing: border-box;
+            margin-left: 1em;
+            padding: 0;
+            -webkit-appearance: none;
+            border-radius: 0;
+            letter-spacing: 0;
+            vertical-align: middle;
+            font-family: inherit;
+            font-size: 0.7em;
+            border: 1px #d6d6d6 solid;
+            height: 28px;
+            padding-left: 5px;
+            width: 280px;
+        }
+
+        div#list {width: 400px; margin: 0 auto; padding: 1em;}
+    </style>
+</head>
+<body>
+    <div id="list">
+        <h2>otp<input id="input" placeholder="일련번호 입력.." /></h2>
+        <!-- 표시 -->
+    </div>
+
+    <template id="row">
+        <ul>
+            <li class="member">
+                <span class="mid"></span>
+            </li>
+            <li class="code">
+                <span class="count"></span>
+            </li>
+            <li class="progress">
+                <progress class="thirty" max="15000" min="0"></progress>
+            </li>
+        </ul>
+    </template>
+
+
+    <script>
+        if(!localStorage.getItem('user')) {
+            localStorage.setItem('user', JSON.stringify(['MTQ3NDgzNjIvdXNlcjM=']));
+        }
+
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        const list = document.getElementById("list");
+
+        const mid = document.getElementsByClassName("mid");
+        const thirty = document.getElementsByClassName("thirty");
+        const count = document.getElementsByClassName("count");
+
+        for(let i in user) {
+            const arr = atob(user[i]).split("/");
+            const code = parseInt(arr[0]);
+
+            const row = document.getElementById("row").content.cloneNode(true);
+            document.getElementById("list").append(row);
+
+            mid[i].innerText = arr[1];
+            count[i].innerText = Math.floor(100000 + random6(getSeed() + code) * 900000);
+        }
+        
+        // 15초
+        const itv = setInterval(() => {
+            user.forEach((item, idx) => {
+                const code = parseInt(atob(item).split("/")[0]);
+
+                const term = new Date().getTime() % 15000;
+                thirty[idx].value = term;
+
+                if(term >= 0 & term <= 8) {
+                    count[idx].innerText = Math.floor(100000 + random6(getSeed() + code) * 900000);
+                }
+            })
+        })
+
+        function getSeed() {
+            const term2 = Date.now();
+            return Math.floor(term2 / 15000) * 15000;
+        }
+
+        function random6(seed) {
+            const x = Math.sin(seed) * 10000;
+            return x - Math.floor(x);
+        }
+
+        document.getElementById("input").addEventListener('keydown', (e) => {
+            const value = e.target.value;
+            if(e.key == 'Enter' && value != '') {
+                try {
+                    atob(value);
+                }
+                catch (e) {
+                    console.log('error >>', e);
+                    return;
+                }
+
+                let user = localStorage.getItem('user');
+                user = JSON.parse(user);
+    
+                user.push(value);
+
+                user = JSON.stringify(user);
+
+                localStorage.setItem('user', user);
+                location.reload(true);
+            }
+        });
+    </script>
+</body>
+</html>
