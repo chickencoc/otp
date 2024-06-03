@@ -101,6 +101,9 @@
         }
 
         function remove(idx) {
+            const check = confirm("삭제하시겠습니까?");
+            if(!check) return;
+            
             let user = localStorage.getItem('user');
                 user = JSON.parse(user);
     
