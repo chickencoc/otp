@@ -6,7 +6,9 @@
     <title>Document</title>
     <style>
         * {box-sizing: border-box; font-size: 20px;}
-        ul, li {text-decoration: none; text-decoration-line: none;}
+        ul, li {text-decoration: none; text-decoration-line: none; list-style-type: none;list-style: none;}
+
+        ul {border: 1px dashed #ccc; padding: 0.5em 1em; margin: 0.3em 0; position: relative;}
         input {    border-collapse: collapse;
             border-spacing: 0;
             box-sizing: border-box;
@@ -36,7 +38,7 @@
     <template id="row">
         <ul>
             <li class="member">
-                <span class="mid"></span>
+                <span class="mid"></span><span class="del" style="cursor: pointer; position: absolute; right: 1em;">❌</span>
             </li>
             <li class="code">
                 <span class="count"></span>
@@ -49,7 +51,7 @@
 
 
     <script>
-        if(!localStorage.getItem('user')) {
+        if(!localStorage.getItem('user') || JSON.parse(localStorage.getItem('user')).length == 0) {
             localStorage.setItem('user', JSON.stringify(['MTQ3NDgzNjIvdXNlcjM=']));
         }
 
@@ -58,6 +60,7 @@
         const list = document.getElementById("list");
 
         const mid = document.getElementsByClassName("mid");
+        const del = document.getElementsByClassName("del");
         const thirty = document.getElementsByClassName("thirty");
         const count = document.getElementsByClassName("count");
 
@@ -69,6 +72,7 @@
             document.getElementById("list").append(row);
 
             mid[i].innerText = arr[1];
+            del[i].onclick = () => remove(i);
             count[i].innerText = Math.floor(100000 + random6(getSeed() + code) * 900000);
         }
         
@@ -94,6 +98,18 @@
         function random6(seed) {
             const x = Math.sin(seed) * 10000;
             return x - Math.floor(x);
+        }
+
+        function remove(idx) {
+            let user = localStorage.getItem('user');
+                user = JSON.parse(user);
+    
+                user.splice(idx, 1);
+
+                user = JSON.stringify(user);
+
+                localStorage.setItem('user', user);
+                location.reload(true);
         }
 
         document.getElementById("input").addEventListener('keydown', (e) => {
